@@ -7,13 +7,19 @@
 
     <changeSet id="1" author="ambrose">
         <createTable tableName="users">
-            <column name="id" type="integer" autoIncrement="true"/>
+            <column name="id" type="integer" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
             <column type="varchar(64)" name="username"/>
         </createTable>
-        <loadData tableName="users" file="users.csv">
-            <column name="username"
-            />
-        </loadData>
+    </changeSet>
+
+    <changeSet id="2" author="ambrose">
+        <sql>
+            insert into users(username) values('ambrose')
+            insert into users(username) values('lucy')
+            insert into users(username) values('mary')
+        </sql>
     </changeSet>
 
 </databaseChangeLog>
