@@ -1,11 +1,10 @@
 package com.ambrose.wecryptserver
 
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.*
 
-@Component
+@RestController
+@CrossOrigin("*")
 class GameController(private val gameServer: GameServer) {
 
     @RequestMapping("/getState", method = [RequestMethod.GET])
@@ -61,6 +60,7 @@ class GameController(private val gameServer: GameServer) {
     private fun Game.toUiState(): UiState {
         return UiState(
                 turns.size,
+                turns.last().code,
                 words,
                 turns.last().clue,
                 turns.last().offenseGuess,
@@ -68,7 +68,7 @@ class GameController(private val gameServer: GameServer) {
                 toStateSummary(),
                 toPreviousSummary(),
                 (1..4).map { i ->
-                    words[i - 1].let { word ->
+                    words[i - 1].let { _ ->
                         turns.dropLast(1).mapNotNull { turn ->
                             turn.code.indexOf(i.toString()).takeIf { it != -1 }?.let { index ->
                                 turn.clue!![index]
@@ -81,7 +81,10 @@ class GameController(private val gameServer: GameServer) {
                 },
                 turns.count {
                     it.defenseGuess != null && it.offenseGuess != null && it.offenseGuess == it.code
-                }
+                },
+                turns.last().clue == null,
+                turns.last().clue != null && turns.last().defenseGuess == null,
+                turns.last().clue != null && turns.last().offenseGuess == null
         )
     }
 

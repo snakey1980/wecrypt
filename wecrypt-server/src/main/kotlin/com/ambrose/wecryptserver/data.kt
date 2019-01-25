@@ -5,6 +5,7 @@ data class Game(val words: List<String>, val turns: List<Turn> = listOf())
 
 data class UiState(
         val turnNumber: Int,
+        val code: String,
         val words: List<String>,
         val clue: List<String>?,
         val offenseGuess: String?,
@@ -13,5 +14,8 @@ data class UiState(
         val previous: String?,
         val keysSoFar: List<List<String>>,
         val misCommunications: Int,
-        val interceptions: Int
+        val interceptions: Int,
+        val needsClue: Boolean,
+        val needsDefenseGuess: Boolean,
+        val needsOffenseGuess: Boolean
 )

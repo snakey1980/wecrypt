@@ -1,5 +1,7 @@
 package com.ambrose.wecryptserver
 
+import org.springframework.boot.context.event.ApplicationStartedEvent
+import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Component
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
@@ -9,7 +11,7 @@ import kotlin.concurrent.withLock
 import kotlin.random.Random
 
 @Component
-class GameServer(private val wordDeck: WordDeck, private val random: Random) {
+class GameServer(private val wordDeck: WordDeck, private val random: Random): ApplicationListener<ApplicationStartedEvent> {
 
     private val lock = ReentrantLock()
     private val game = AtomicReference<Game>()
@@ -31,7 +33,7 @@ class GameServer(private val wordDeck: WordDeck, private val random: Random) {
         if (current.turns.size == 24) {
             throw IllegalStateException("There are no more turns in this game!")
         }
-        current.turns.last().run {
+        current.turns.lastOrNull()?.run {
             if (clue == null || defenseGuess == null || offenseGuess == null) {
                 throw IllegalStateException("Last turn is not over!")
             }
@@ -41,7 +43,7 @@ class GameServer(private val wordDeck: WordDeck, private val random: Random) {
     }
 
     fun clue(clue: List<String>): Game = lock.withLock {
-        if (clue.size != 4 || clue.any { it.isBlank() }) {
+        if (clue.size != 3 || clue.any { it.isBlank() }) {
             throw IllegalArgumentException("Invalid clue: $clue")
         }
         val current = getGame()
@@ -81,5 +83,8 @@ class GameServer(private val wordDeck: WordDeck, private val random: Random) {
         return game.get()
     }
 
+    override fun onApplicationEvent(event: ApplicationStartedEvent) {
+        newGame()
+    }
 
 }
